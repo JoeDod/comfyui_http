@@ -98,25 +98,3 @@ class SimpleHttpRequest:
 
         except Exception as e:
             return (f"Error: {str(e)}", 0, "{}")
-
-
-class SimpleShowText:
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "text": ("STRING", {
-                    "forceInput": True
-                }),
-            }
-        }
-
-    RETURN_TYPES = ("STRING", )
-    RETURN_NAMES = ("text", )
-    FUNCTION = "notify"
-    CATEGORY = "Network"
-    OUTPUT_NODE = True
-
-    def notify(self, text):
-        return {"ui": {"text": [text]}, "result": (text, )}
