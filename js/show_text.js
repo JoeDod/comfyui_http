@@ -5,28 +5,33 @@ app.registerExtension({
 	name: "Comfy.SimpleHttpRequest.ShowText",
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
 		if (nodeData.name === "SimpleShowText") {
+			// 在节点创建时添加 Widget，这样它就一直存在且可见
+			const onNodeCreated = nodeType.prototype.onNodeCreated;
+			nodeType.prototype.onNodeCreated = function () {
+				const r = onNodeCreated ? onNodeCreated.apply(this, arguments) : undefined;
+
+				// 创建一个名为 "result" 的多行文本控件
+				// ComfyWidgets["STRING"] 会自动将其添加到 this.widgets 中
+				// 这里的 "result" 是显示在界面上的标签名
+				const w = ComfyWidgets["STRING"](this, "result", ["STRING", { multiline: true }], app).widget;
+
+				// 默认就是可编辑的，所以不需要设置 readOnly
+				// 如果你想让它看起来更像一个输出框，可以保留 opacity 设置，或者去掉让它完全像一个输入框
+				// w.inputEl.style.opacity = 0.6; 
+
+				return r;
+			};
+
+			// 节点执行完成后更新 Widget 的值
 			const onExecuted = nodeType.prototype.onExecuted;
 			nodeType.prototype.onExecuted = function (message) {
 				onExecuted?.apply(this, arguments);
 
 				if (message && message.text) {
-					// 尝试找到名为 "display_text" 的 widget
-					let w = this.widgets && this.widgets.find((w) => w.name === "display_text");
-
-					// 如果没找到，创建一个新的
-					if (!w) {
-						// ComfyWidgets["STRING"] 返回的是一个对象 { widget: ... }
-						// 参数: node, name, [type, options], app
-						const widgetData = ComfyWidgets["STRING"](this, "display_text", ["STRING", { multiline: true }], app);
-						w = widgetData.widget;
-						w.inputEl.readOnly = true;
-						w.inputEl.style.opacity = 0.6;
-					}
-
-					// 更新值
+					const w = this.widgets && this.widgets.find((w) => w.name === "result");
 					if (w) {
 						w.value = message.text.join("");
-						// 调整节点大小以适应内容（可选）
+						// 触发重绘，确保内容更新
 						this.onResize?.(this.size);
 					}
 				}
