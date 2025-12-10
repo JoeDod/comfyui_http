@@ -90,7 +90,7 @@ class SimpleHttpRequest:
             # 标准 ComfyUI 没有在没有自定义节点的情况下轻松传递的通用 JSON 类型，
             # 但将其作为字符串返回是安全的。
             try:
-                json_output = json.dumps(response.json(), indent=2)
+                json_output = json.dumps(response.json(), indent=2, ensure_ascii=False)
             except:
                 json_output = "{}"
 
