@@ -101,19 +101,22 @@ class SimpleHttpRequest:
 
 
 class SimpleShowText:
+
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "text": ("STRING", {"forceInput": True}),
+                "text": ("STRING", {
+                    "forceInput": True
+                }),
             }
         }
 
-    RETURN_TYPES = ("STRING",)
-    RETURN_NAMES = ("text",)
+    RETURN_TYPES = ("STRING", )
+    RETURN_NAMES = ("text", )
     FUNCTION = "notify"
     CATEGORY = "Network"
     OUTPUT_NODE = True
 
     def notify(self, text):
-        return {"ui": {"text": [text]}, "result": (text,)}
+        return {"ui": {"text": [text]}, "result": (text, )}
